@@ -57,7 +57,7 @@
 
 > 1. Клонируйте данный репозиторий.
 ```shell
-git clone https://github.com/AtaraxiaSpaceFoundation/Orion-Station-14.git
+git clone https://github.com/ArcaneSS14/arcane-station.git
 ```
 > 2. Откройте коммандную строку в папке репозитория и введите команду для того, чтобы скачать движок игры.
 ```shell
@@ -95,7 +95,7 @@ All code in this codebase is released under the [AGPL-3.0](LICENSE-AGPLv3.TXT)-o
 
 Most media assets are licensed under [CC-BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) unless stated otherwise. Assets have their license and the copyright in the metadata file. [Example](https://github.com/space-wizards/space-station-14/blob/master/Resources/Textures/Objects/Tools/crowbar.rsi/meta.json).
 
-By submitting a pull request or making a commit to the Ataraxia Space Foundation / Orion-Station, you agree to the terms of our [Contributor License Agreement](LICENSE-CLA.TXT). This agreement grants us the right to distribute your contributions under any license we choose, while you retain your copyright ownership.
+By submitting a pull request or making a commit to the Arcane Station, you agree to the terms of our [Contributor License Agreement](LICENSE-CLA.TXT). This agreement grants us the right to distribute your contributions under any license we choose, while you retain your copyright ownership.
 
 </div>
 
