@@ -6,7 +6,7 @@
   parent: PoweredSmallLightEmpty
   components:
   - type: Sprite
-    sprite: _Arcane/Structures/Wallmounts/Lightning/floor_light_middle.rsi
+    sprite: _Arcane/Structures/Wallmounts/Lightning/floor_light_bulb_middle.rsi
     drawdepth: FloorObjects
   - type: Construction
     graph: LightFixture
