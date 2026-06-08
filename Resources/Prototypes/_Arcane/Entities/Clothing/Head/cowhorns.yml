@@ -6,4 +6,3 @@
   components:
   - type: Sprite
     sprite: _Arcane/Clothing/Head/cow_horns.rsi
-    scale: 0.65, 0.65
