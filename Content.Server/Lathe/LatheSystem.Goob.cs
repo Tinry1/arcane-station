@@ -3,6 +3,7 @@ using Content.Goobstation.Common.NTR.Scan;
 using Content.Goobstation.Shared.Lathe;
 using Content.Server.Chat.Systems;
 using Content.Server.Lathe.Components;
+using Content.Shared._Orion.DocumentPrinter;
 using Content.Shared.Chemistry.Components;
 using Content.Shared.Chemistry.Reagent;
 using Content.Shared.Lathe;
@@ -20,14 +21,25 @@ public sealed partial class LatheSystem
         var (uid, component) = ent;
         if (component.Queue.Count > 0)
         {
-            var allMaterials = component.Queue.SelectMany(q => _proto.Index(q).Materials);
+            // Orion-Edit-Start
             var totalMaterials = new Dictionary<string, int>();
 
-            foreach (var (mat, amount) in allMaterials)
+            if (component.ActiveMaterialRefund != null)
             {
-                totalMaterials.TryAdd(mat, 0);
-                totalMaterials[mat] += amount;
+                foreach (var (mat, amount) in component.ActiveMaterialRefund)
+                {
+                    totalMaterials[mat] = totalMaterials.GetValueOrDefault(mat) + amount;
+                }
             }
+
+            foreach (var refund in component.QueuedMaterialRefunds)
+            {
+                foreach (var (mat, amount) in refund)
+                {
+                    totalMaterials[mat] = totalMaterials.GetValueOrDefault(mat) + amount;
+                }
+            }
+            // Orion-Edit-End
 
             if(_materialStorage.CanChangeMaterialAmount(uid, totalMaterials))
             {
@@ -36,6 +48,15 @@ public sealed partial class LatheSystem
                     _materialStorage.TryChangeMaterialAmount(uid, mat, amount);
                 }
                 component.Queue.Clear();
+                // Orion-Start
+                component.QueuedMaterialRefunds.Clear();
+                component.ActiveMaterialRefund = null;
+                // Orion-End
+
+                // Orion-Start
+                if (TryComp<DocumentPrinterComponent>(uid, out var printerComponent))
+                    printerComponent.Queue.RemoveRange(1, Math.Max(0, printerComponent.Queue.Count - 1));
+                // Orion-End
             }
             else
             {
