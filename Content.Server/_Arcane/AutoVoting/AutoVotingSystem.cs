@@ -30,6 +30,6 @@ public sealed partial class AutoVotingSystem : EntitySystem
     {
         return _playerManager.Sessions.Any(session =>
             session.Channel != null &&
-        session.Channel.GetType().Name != "DummyChannel"); // Чтобы не ронялись тесты
+            session.Channel.GetType().Name != "DummyChannel"); // Чтобы не ронялись тесты
     }
 }
