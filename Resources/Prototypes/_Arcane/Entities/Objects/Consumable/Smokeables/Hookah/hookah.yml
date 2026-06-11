@@ -9,11 +9,12 @@
     state: icon
   - type: Item
     size: Huge
-  - type: ContainerContainer
+- type: ContainerContainer
+  containers:
     hookahp: !type:ContainerSlot
-        showEnts: False
-        occludes: True
-        ent: null
+      showEnts: False
+      occludes: True
+      ent: null
   - type: ItemSlots
     slots:
       hookahp:
