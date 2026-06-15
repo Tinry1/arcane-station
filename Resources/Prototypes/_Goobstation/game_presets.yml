@@ -164,7 +164,7 @@
   rules:
     # - CalmDynamic Arcane
     - SubGamemodesCalmRule # Arcane
-    - BasicStationEventScheduler # Arcane
+    - BasicStationEventSchedulerNoAntag # Arcane
     - RareIonStormScheduler
     - SpaceTrafficControlFriendlyEventScheduler
 
