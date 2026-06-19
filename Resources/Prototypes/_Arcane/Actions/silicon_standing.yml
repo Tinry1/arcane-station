@@ -8,7 +8,7 @@
   - type: Action
     itemIconStyle: NoItem
     icon:
-      sprite: Interface/Actions/actions_borg.rsi
-      state: no-action
+      sprite: _Arcane/Interface/Actions/silicon_standing.rsi
+      state: rest
   - type: InstantAction
     event: !type:ToggleSiliconRestingEvent
