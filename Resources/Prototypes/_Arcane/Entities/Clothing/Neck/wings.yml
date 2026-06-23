@@ -1,0 +1,8 @@
+- type: entity
+  parent: ClothingNeckBase
+  id: ClothingNeckBeerWings
+  name: beer wings
+  description: Beer wings.
+  components:
+  - type: Sprite
+    sprite: _Arcane/Clothing/Neck/Wings/beer_wings.rsi

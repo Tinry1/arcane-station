@@ -5,6 +5,7 @@ using Content.Shared._Arcane.ErpPanel;
 using Content.Shared.Chat;
 using Content.Shared.Humanoid;
 using Content.Shared.IdentityManagement;
+using Content.Shared.Popups;
 using Content.Shared.Verbs;
 using Robust.Server.Audio;
 using Robust.Server.GameObjects;
@@ -21,6 +22,7 @@ public sealed partial class ErpPanelSystem : EntitySystem
 {
     [Dependency] private readonly SharedUserInterfaceSystem _ui = default!;
     [Dependency] private readonly InteractionSystem _interaction = default!;
+    [Dependency] private readonly SharedPopupSystem _popup = default!;
     [Dependency] private readonly IPrototypeManager _prototype = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
     [Dependency] private readonly IGameTiming _ticking = default!;
@@ -29,12 +31,7 @@ public sealed partial class ErpPanelSystem : EntitySystem
     [Dependency] private readonly AudioSystem _audio = default!;
     [Dependency] private readonly TransformSystem _transform = default!;
 
-    private EntProtoId _heartsProto = new("EffectHearts");
-    private Dictionary<Gender, ProtoId<SoundCollectionPrototype>> _moanSounds = new()
-    {
-        { Gender.Male, new ProtoId<SoundCollectionPrototype>("MoansMale") },
-        { Gender.Female, new ProtoId<SoundCollectionPrototype>("MoansFemale") },
-    };
+    private static readonly EntProtoId _heartsProto = new("EffectHearts");
 
     public override void Initialize()
     {
@@ -117,11 +114,20 @@ public sealed partial class ErpPanelSystem : EntitySystem
         customArousal = Math.Clamp(customArousal, 0, 300);
         customMoaning = Math.Clamp(customMoaning, 0, 300);
 
-        _arousal.AddArousal(user, interaction.UserArouse * customArousal / 100);
-        _arousal.AddArousal(target, interaction.TargetArouse * customArousal / 100);
-
         if (interaction.TargetArouse > 0)
+        {
+            // Block if the target would receive arousal but is currently refractory.
+            if (!_arousal.CanAddArousal(target))
+            {
+                var key = user == target ? "erp-refractory-self" : "erp-refractory-target";
+                _popup.PopupEntity(Loc.GetString(key), target, user, PopupType.SmallCaution);
+                return;
+            }
+
             Spawn(_heartsProto, _transform.GetMapCoordinates(target));
+            _arousal.AddArousal(target, interaction.TargetArouse * customArousal / 100);
+            ProccessMoan(target, customMoaning);
+        }
 
         userPanel.Cooldowns[interaction.ID] = _ticking.CurTime;
         Dirty(user, userPanel);
@@ -129,8 +135,21 @@ public sealed partial class ErpPanelSystem : EntitySystem
         ProccessMessages(user, target, interaction);
         ProccessSounds(user, interaction);
 
-        ProccessMoan(user, customMoaning);
-        ProccessMoan(target, customMoaning);
+        if (user == target)
+            return;
+
+        if (interaction.UserArouse > 0)
+        {
+            if (!_arousal.CanAddArousal(user))
+            {
+                _popup.PopupEntity(Loc.GetString("erp-refractory-self"), user, user, PopupType.SmallCaution);
+                return;
+            }
+
+            _arousal.AddArousal(user, interaction.UserArouse * customArousal / 100);
+            ProccessMoan(user, customMoaning);
+        }
+
     }
 
     private void ProccessMoan(EntityUid uid, float customMoaning)
@@ -142,6 +161,7 @@ public sealed partial class ErpPanelSystem : EntitySystem
             return;
 
         var userMoanChance = userArousal.LastValue / userArousal.MaxArousal * customMoaning / 100f;
+        userMoanChance = Math.Clamp(userMoanChance, 0f, 1f);
 
         if (_random.Prob(userMoanChance))
             MoanWithGender(uid, userHumanoid.Gender, userArousal.LastValue / userArousal.MaxArousal);
@@ -149,7 +169,7 @@ public sealed partial class ErpPanelSystem : EntitySystem
 
     private void MoanWithGender(EntityUid uid, Gender userHumanoid, float arousalPercent)
     {
-        var collection = _moanSounds.GetValueOrDefault(userHumanoid, _moanSounds[Gender.Female]);
+        var collection = ErpAudio.MoanSounds.GetValueOrDefault(userHumanoid, ErpAudio.MoanSounds[Gender.Female]);
 
         if (!_prototype.TryIndex(collection, out var soundCollection))
             return;
@@ -213,9 +233,6 @@ public sealed partial class ErpPanelSystem : EntitySystem
         if (!HasComp<ArousalComponent>(user) || !HasComp<ArousalComponent>(target))
             return false;
 
-        if (TryComp<ErpStatusComponent>(target, out var targetStatus) && targetStatus.Preference == ErpPreference.No)
-            return false;
-
         return true;
     }
 
@@ -239,7 +256,28 @@ public sealed partial class ErpPanelSystem : EntitySystem
         if (!HasComp<ArousalComponent>(user) || !HasComp<ArousalComponent>(target))
             return false;
 
+        if (IsErpInteraction(interaction) && !CanUseErp(user, target))
+            return false;
+
         if (userPanel.Cooldowns.TryGetValue(interaction.ID, out var lastUse) && lastUse + interaction.Cooldown > _ticking.CurTime)
+            return false;
+
+        return true;
+    }
+
+    private bool IsErpInteraction(PanelInteractionPrototype interaction)
+    {
+        return interaction.Tags.Contains(ErpPanelConstants.ErpInteractionTag);
+    }
+
+    private bool CanUseErp(EntityUid user, EntityUid target)
+    {
+        if (TryComp<ErpStatusComponent>(user, out var userStatus) && userStatus.Preference == ErpPreference.No)
+            return false;
+
+        if (user != target &&
+            TryComp<ErpStatusComponent>(target, out var targetStatus) &&
+            targetStatus.Preference == ErpPreference.No)
             return false;
 
         return true;
