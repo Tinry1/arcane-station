@@ -5,6 +5,6 @@
   description: Beer suit.
   components:
   - type: Sprite
-    sprite: _Arcane/Clothing/OuterClothing/beer_suit.rsi
+    sprite: _Arcane/Clothing/Outerclothing/beer_suit.rsi
   - type: Clothing
-    sprite: _Arcane/Clothing/OuterClothing/beer_suit.rsi
+    sprite: _Arcane/Clothing/Outerclothing/beer_suit.rsi

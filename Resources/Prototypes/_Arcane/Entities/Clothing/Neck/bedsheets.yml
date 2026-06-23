@@ -5,7 +5,7 @@
   description: Look! I sleep in the beer!
   components:
   - type: Sprite
-    sprite: _Arcane/Clothing/Bedsheets/beer_bedsheet.rsi
-    state: sheetinteq
+    sprite: _Arcane/Clothing/Neck/Bedsheets/beer_bedsheet.rsi
+    state: sheetBEER
   - type: Clothing
-    sprite: _Arcane/Clothing/Bedsheets/beer_bedsheet.rsi
+    sprite: _Arcane/Clothing/Neck/Bedsheets/beer_bedsheet.rsi
