@@ -163,7 +163,7 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-using Content.Server._Arcane.BanWebhook;
+using Content.Server._Arcane.Discord;
 using Content.Server._Art.TTS; // Art-TTS
 using Content.Server._Goobstation.Antag;
 using Content.Server._Orion.ServerProtection;
@@ -260,7 +260,10 @@ namespace Content.Server.IoC
             IoCManager.Register<AdminActionProtectionSystem>();
             // Orion-End
             IoCManager.Register<TTSManager>(); // Art-TTS
-            IoCManager.Register<BanWebhooks>(); // Arcane
+            // Arcane-start
+            IoCManager.Register<BanWebhooks>();
+            IoCManager.Register<ChatLogsWebhook>();
+            // Arcane-end
         }
     }
 }

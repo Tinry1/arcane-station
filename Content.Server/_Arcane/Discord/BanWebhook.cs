@@ -7,7 +7,7 @@ using Robust.Server;
 using Robust.Server.Player;
 using Robust.Shared.Network;
 
-namespace Content.Server._Arcane.BanWebhook;
+namespace Content.Server._Arcane.Discord;
 
 public sealed partial class BanWebhooks : IPostInjectInit
 {

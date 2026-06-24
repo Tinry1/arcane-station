@@ -20,7 +20,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Content.Server._Arcane.BanWebhook;
+using Content.Server._Arcane.Discord;
 using Content.Server._Orion.ServerProtection.Administration;
 using Content.Server.Chat.Managers;
 using Content.Server.Database;

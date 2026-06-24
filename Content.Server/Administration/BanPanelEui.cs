@@ -62,7 +62,7 @@
 
 using System.Net;
 using System.Net.Sockets;
-using Content.Server._Arcane.BanWebhook;
+using Content.Server._Arcane.Discord;
 using Content.Server.Administration.Managers;
 using Content.Server.Administration.Systems;
 using Content.Server.Chat.Managers;

@@ -204,6 +204,7 @@ using Robust.Shared.Utility;
 using Content.Shared.Damage;
 using Microsoft.CodeAnalysis.Elfie.Serialization;
 using Content.Goobstation.Maths.FixedPoint;
+using Content.Server._Arcane.Discord;
 
 namespace Content.Server.Chat.Managers;
 
@@ -237,6 +238,7 @@ internal sealed partial class ChatManager : IChatManager
     [Dependency] private readonly ISharedPlayerManager _player = default!;
     [Dependency] private readonly LinkAccountManager _linkAccount = default!; // RMC - Patreon
     [Dependency] private readonly ChatProtectionSystem _chatProtection = default!; // Orion
+    [Dependency] private readonly ChatLogsWebhook _chatLogsWebhook = default!; // Arcane
 
     /// <summary>
     /// The maximum length a player-sent message can be sent
@@ -492,6 +494,7 @@ internal sealed partial class ChatManager : IChatManager
         ChatMessageToAll(ChatChannel.OOC, message, wrappedMessage, EntityUid.Invalid, hideChat: false, recordReplay: true, colorOverride: colorOverride, author: player.UserId);
         _mommiLink.SendOOCMessage(player.Name, message.Replace("@", "\\@").Replace("<", "\\<").Replace("/", "\\/")); // @ and < are both problematic for discord due to pinging. / is sanitized solely to kneecap links to murder embeds via blunt force
         _adminLogger.Add(LogType.Chat, LogImpact.Low, $"OOC from {player:Player}: {message}");
+        _chatLogsWebhook.CreateChatWebhookMessage(ChatChannel.OOC, message, player); // Arcane
     }
 
     private void SendAdminChat(ICommonSession player, string message)
@@ -522,6 +525,7 @@ internal sealed partial class ChatManager : IChatManager
         }
 
         _adminLogger.Add(LogType.Chat, $"Admin chat from {player:Player}: {message}");
+        _chatLogsWebhook.CreateChatWebhookMessage(ChatChannel.AdminChat, message, player); // Arcane
     }
 
     #endregion
